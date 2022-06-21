@@ -2,13 +2,16 @@
   "profiles": {
     "Movies.Api": {
       "commandName": "Project",
+      "workingDirectory": "C:\\repositories2\\Movies\\Movies.Api",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7145;http://localhost:5145"
+      "applicationUrl": "https://localhost:7145;http://localhost:5145",
+      "nativeDebugging": true,
+      "sqlDebugging": true
     },
     "IIS Express": {
       "commandName": "IISExpress",
