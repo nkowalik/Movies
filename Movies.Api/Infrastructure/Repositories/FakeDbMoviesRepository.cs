@@ -38,7 +38,7 @@ namespace Movies.Api.Infrastructure.Repositories
         public async Task<IEnumerable<FakeDbMovieEntity>> GetMoviesAsync()
         {
             MovieContextSeeder.SeedFakeDb(_context);
-            return _context.MoviesFromFakeDb;
+            return await _context.MoviesFromFakeDb.ToListAsync();
         }
 
         public async Task<FakeDbMovieEntity?> GetMovieByTitleAsync(string title)
@@ -59,7 +59,8 @@ namespace Movies.Api.Infrastructure.Repositories
 
         public async Task<FakeDbMovieEntity?> GetMovieByIdAsync(int id)
         {
-            return await _context.MoviesFromFakeDb.Where(m => m.Id == id).FirstOrDefaultAsync();
+            return await _context.MoviesFromFakeDb.Include(m => m.Search)
+                .Where(m => m.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<bool> MovieExistsAsync(int id)
