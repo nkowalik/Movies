@@ -14,7 +14,9 @@
                 Year = "2003",
                 Genre = "Drama",
                 Director = "Tommy Wiseau",
-                Plot = "Johnny is a successful bank executive who lives quietly in a San Francisco townhouse with his fiancée, Lisa. One day, putting aside any scruple, she seduces Johnny's best friend, Mark. From there, nothing will be the same again."
+                Plot = "Johnny is a successful bank executive who lives quietly in a San Francisco " +
+                "townhouse with his fiancée, Lisa. One day, putting aside any scruple, " +
+                "she seduces Johnny's best friend, Mark. From there, nothing will be the same again."
             });
 
             Task.WaitAll();
@@ -23,20 +25,28 @@
 
         public static void SeedFakeDb(MoviesContext context)
         {
-            if (context.MoviesFromFakeDb.Any(m => m.MovieDetails.Title == "Game of Thrones"))
+            const int testMovieId = 123;
+            if (context.MoviesFromFakeDb.Any(m => m.Id == testMovieId))
             {
                 return;
             }
 
-            context.MoviesFromFakeDb.Add(new Entities.FakeDbMovieEntity()
+            var fakeDbMovieEntity = new Entities.FakeDbMovieEntity()
             {
-                MovieDetails = new Entities.FakeDbMovieDetailsEntity
+                Id = testMovieId,
+                MovieDetails = new List<Entities.FakeDbMovieDetailsEntity>
                 {
-                    Title = "Game of Thrones",
-                    Year = "2011-2019",
-                    Poster = "some url"
+                    new Entities.FakeDbMovieDetailsEntity
+                    {
+                        Title = "Game of Thrones",
+                        Year = "2011-2019",
+                        Poster = "some url",
+                        FakeDbMovieId = testMovieId
+                    }
                 }
-            });
+            };
+
+            context.MoviesFromFakeDb.Add(fakeDbMovieEntity);
 
             Task.WaitAll();
             context.SaveChanges();

@@ -30,6 +30,10 @@ namespace Movies.Api.Infrastructure.Repositories
         public async Task<FakeDbMovieEntity?> GetMovieByTitleAsync(string title)
         {
             var movies = await _collector.FetchMovieDataFromFakeDbAsync(title);
+            if (movies == null)
+            {
+                return null;
+            }
             return _mapper.Map<FakeDbMovieEntity>(movies);
         }
 

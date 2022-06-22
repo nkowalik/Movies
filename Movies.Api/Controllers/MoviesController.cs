@@ -54,7 +54,7 @@ namespace Movies.Api.Controllers
         /// Get a movie data by its title from requested source
         /// </summary>
         /// <param name="source">A source from which the data will be collected. Supported sources: OmDb, FakeDb.</param>
-        /// <param name="title">A movie title</param>
+        /// <param name="title">A movie title (for FakeDb e.g. Batman)</param>
         /// <returns>IActionResult</returns>
         /// <response code="200">A movie by title from the requested source is returned</response>
         /// <response code="404">No such movie was found in the requested source</response>

@@ -12,6 +12,6 @@ namespace Movies.Api.Infrastructure.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public FakeDbMovieDetailsEntity MovieDetails { get; set; }
+        public IEnumerable<FakeDbMovieDetailsEntity> MovieDetails { get; set; }
     }
 }

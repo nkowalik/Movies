@@ -9,6 +9,8 @@ namespace Movies.Api.Infrastructure.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        public string? ImdbID { get; set; }
+
         [Required]
         [MaxLength(200)]
         public string Title { get; set; }
@@ -19,5 +21,8 @@ namespace Movies.Api.Infrastructure.Entities
 
         [Required]
         public string Poster { get; set; }
+
+        [ForeignKey("FakeDbMovieId")]
+        public int FakeDbMovieId { get; set; }
     }
 }
