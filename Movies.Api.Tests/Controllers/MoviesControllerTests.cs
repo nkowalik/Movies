@@ -18,6 +18,8 @@ namespace Movies.Api.Tests.Controllers
 
         private MoviesController _sut;
 
+        private const string Title = "movie title";
+
         [SetUp]
         public void Setup()
         {
@@ -35,12 +37,11 @@ namespace Movies.Api.Tests.Controllers
         [Test]
         public async Task WhenGetMoviesAsyncWithOmDbIsCalled_ThenProperResultIsReturned()
         {
-            const string title = "movie title";
             const string dbName = "omdb";
 
             var movies = new List<OmDbMovieEntity>()
             {
-                CreateTestOmDbMovie(title)
+                CreateTestOmDbMovie(Title)
             };
             _omdbRepo.GetMoviesAsync().Returns(movies);
 
@@ -56,12 +57,11 @@ namespace Movies.Api.Tests.Controllers
         [Test]
         public async Task WhenGetMoviesAsyncWithFakeDbIsCalled_ThenProperResultIsReturned()
         {
-            const string title = "movie title";
             const string dbName = "fakedb";
 
             var movies = new List<FakeDbMovieEntity>()
             {
-                CreateTestFakeDbMovie(title)
+                CreateTestFakeDbMovie(Title)
             };
             _fakedbRepo.GetMoviesAsync().Returns(movies);
 
@@ -77,36 +77,68 @@ namespace Movies.Api.Tests.Controllers
         [Test]
         public async Task WhenGetMovieByTitleAsyncWithOmDbIsCalled_ThenProperResultIsReturned()
         {
-            const string title = "movie title";
             const string dbName = "omdb";
 
-            var movie = CreateTestOmDbMovie(title);
-            _omdbRepo.GetMovieByTitleAsync(title).Returns(movie);
+            var movie = CreateTestOmDbMovie(Title);
+            _omdbRepo.GetMovieByTitleAsync(Title).Returns(movie);
 
-            var result = await _sut.GetMovieByTitleAsync(dbName, title);
+            var result = await _sut.GetMovieByTitleAsync(dbName, Title);
 
             Assert.Multiple(async () =>
             {
                 Assert.That(result, Is.Not.Null);
-                await _omdbRepo.Received(1).GetMovieByTitleAsync(title);
+                await _omdbRepo.Received(1).GetMovieByTitleAsync(Title);
             });
         }
 
         [Test]
         public async Task WhenGetMovieByTitleAsyncWithFakeDbIsCalled_ThenProperResultIsReturned()
         {
-            const string title = "movie title";
             const string dbName = "fakedb";
 
-            var movie = CreateTestFakeDbMovie(title);
-            _fakedbRepo.GetMovieByTitleAsync(title).Returns(movie);
+            var movie = CreateTestFakeDbMovie(Title);
+            _fakedbRepo.GetMovieByTitleAsync(Title).Returns(movie);
 
-            var result = await _sut.GetMovieByTitleAsync(dbName, title);
+            var result = await _sut.GetMovieByTitleAsync(dbName, Title);
 
             Assert.Multiple(async () =>
             {
                 Assert.That(result, Is.Not.Null);
-                await _fakedbRepo.Received(1).GetMovieByTitleAsync(title);
+                await _fakedbRepo.Received(1).GetMovieByTitleAsync(Title);
+            });
+        }
+
+        [Test]
+        public async Task WhenDeleteMovieByTitleAsyncWithOmDbIsCalled_ThenProperMethodsAreCalled()
+        {
+            const string dbName = "omdb";
+
+            var movie = CreateTestOmDbMovie(Title);
+            _omdbRepo.GetMovieByIdAsync(movie.Id).Returns(movie);
+
+            await _sut.DeleteMovieAsync(movie.Id, dbName);
+
+            Assert.Multiple(async () =>
+            {
+                await _omdbRepo.Received(1).GetMovieByIdAsync(movie.Id);
+                await _omdbRepo.Received(1).DeleteMovieAsync(movie);
+            });
+        }
+
+        [Test]
+        public async Task WhenDeleteMovieByTitleAsyncWithFakeDbIsCalled_ThenProperMethodsAreCalled()
+        {
+            const string dbName = "fakedb";
+
+            var movie = CreateTestFakeDbMovie(Title);
+            _fakedbRepo.GetMovieByIdAsync(movie.Id).Returns(movie);
+
+            await _sut.DeleteMovieAsync(movie.Id, dbName);
+
+            Assert.Multiple(async () =>
+            {
+                await _fakedbRepo.Received(1).GetMovieByIdAsync(movie.Id);
+                await _fakedbRepo.Received(1).DeleteMovieAsync(movie);
             });
         }
 
@@ -127,7 +159,7 @@ namespace Movies.Api.Tests.Controllers
             return new FakeDbMovieEntity()
             {
                 Id = 1,
-                MovieDetails = new List<FakeDbMovieDetailsEntity>
+                Search = new List<FakeDbMovieDetailsEntity>
                     {
                         new FakeDbMovieDetailsEntity
                         {

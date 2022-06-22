@@ -1,5 +1,8 @@
 ﻿namespace Movies.Api.Models
 {
+    /// <summary>
+    /// A model for a movie from OmDb repository
+    /// </summary>
     public class OmDbMovieDto
     {
         public int Id { get; set; }

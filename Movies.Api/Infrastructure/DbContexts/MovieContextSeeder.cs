@@ -1,7 +1,14 @@
 ﻿namespace Movies.Api.Infrastructure.DbContexts
 {
+    /// <summary>
+    /// A seeder for initializing db context
+    /// </summary>
     public static class MovieContextSeeder
     {
+        /// <summary>
+        /// Initializes OmDb movie context
+        /// </summary>
+        /// <param name="context">Movies context</param>
         public static void SeedOmDb(MoviesContext context)
         {
             if (context.MoviesFromOmDb.Any(m => m.Title == "The Room"))
@@ -23,6 +30,10 @@
             context.SaveChanges();
         }
 
+        /// <summary>
+        /// Initializes FakeDb movie context
+        /// </summary>
+        /// <param name="context">Movies context</param>
         public static void SeedFakeDb(MoviesContext context)
         {
             const int testMovieId = 123;
@@ -34,7 +45,7 @@
             var fakeDbMovieEntity = new Entities.FakeDbMovieEntity()
             {
                 Id = testMovieId,
-                MovieDetails = new List<Entities.FakeDbMovieDetailsEntity>
+                Search = new List<Entities.FakeDbMovieDetailsEntity>
                 {
                     new Entities.FakeDbMovieDetailsEntity
                     {

@@ -7,7 +7,7 @@ namespace Movies.Api.Infrastructure.Repositories
         Task<IEnumerable<T>> GetMoviesAsync();
         Task<T?> GetMovieByTitleAsync(string title);
         Task<T?> GetMovieByIdAsync(int id);
-        Task DeleteMovie(T movie);
+        Task DeleteMovieAsync(T movie);
         Task<bool> MovieExistsAsync(int id);
         Task<bool> SaveChangesAsync(MoviesContext context);
     }

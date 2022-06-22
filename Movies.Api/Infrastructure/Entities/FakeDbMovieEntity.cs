@@ -8,10 +8,16 @@ namespace Movies.Api.Infrastructure.Entities
     /// </summary>
     public class FakeDbMovieEntity
     {
+        /// <summary>
+        /// An entity id
+        /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public IEnumerable<FakeDbMovieDetailsEntity> MovieDetails { get; set; }
+        /// <summary>
+        /// A list of movies that are found in FakeDb repository by title
+        /// </summary>
+        public IEnumerable<FakeDbMovieDetailsEntity> Search { get; set; }
     }
 }

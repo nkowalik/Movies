@@ -1,5 +1,8 @@
 ﻿namespace Movies.Api.Models
 {
+    /// <summary>
+    /// A model for movie details that are found in FakeDb repository
+    /// </summary>
     public class FakeDbMovieDetailsDto
     {
         public int Id { get; set; }

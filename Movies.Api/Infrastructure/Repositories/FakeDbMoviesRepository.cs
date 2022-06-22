@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Rest.TransientFaultHandling;
+using Movies.Api.ConnectionHandlers;
 using Movies.Api.DataCollectors;
 using Movies.Api.Infrastructure.DbContexts;
 using Movies.Api.Infrastructure.Entities;
+using System.Diagnostics;
 
 namespace Movies.Api.Infrastructure.Repositories
 {
@@ -12,6 +15,7 @@ namespace Movies.Api.Infrastructure.Repositories
         private readonly IMapper _mapper;
 
         private readonly MoviesContext _context;
+        private readonly RetryPolicy _retryPolicy;
 
         public FakeDbMoviesRepository(IMoviesDataCollector collector, IMapper mapper,
             MoviesContext context)
@@ -19,6 +23,16 @@ namespace Movies.Api.Infrastructure.Repositories
             _collector = collector;
             _mapper = mapper;
             _context = context;
+
+            _retryPolicy = new RetryPolicy<MoviesTransientErrorDetectionStrategy>
+                (new IncrementalRetryStrategy(5, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(1.5))
+                {
+                    FastFirstRetry = true
+                });
+
+            _retryPolicy.Retrying += (s, e) =>
+            Trace.TraceWarning("An error occurred in attempt number {1} to create geolocation: {0}",
+            e.LastException.Message, e.CurrentRetryCount);
         }
 
         public async Task<IEnumerable<FakeDbMovieEntity>> GetMoviesAsync()
@@ -29,12 +43,18 @@ namespace Movies.Api.Infrastructure.Repositories
 
         public async Task<FakeDbMovieEntity?> GetMovieByTitleAsync(string title)
         {
-            var movies = await _collector.FetchMovieDataFromFakeDbAsync(title);
-            if (movies == null)
+            var movieDto = await _retryPolicy.ExecuteAction(() => 
+                _collector.FetchMovieDataFromFakeDbAsync(title));
+            if (movieDto == null)
             {
                 return null;
             }
-            return _mapper.Map<FakeDbMovieEntity>(movies);
+            var movieEntity = _mapper.Map<FakeDbMovieEntity>(movieDto);
+
+            _context.MoviesFromFakeDb.Add(movieEntity);
+            await SaveChangesAsync(_context);
+
+            return movieEntity;
         }
 
         public async Task<FakeDbMovieEntity?> GetMovieByIdAsync(int id)
@@ -53,7 +73,7 @@ namespace Movies.Api.Infrastructure.Repositories
             return (await context.SaveChangesAsync() >= 0);
         }
 
-        public async Task DeleteMovie(FakeDbMovieEntity movie)
+        public async Task DeleteMovieAsync(FakeDbMovieEntity movie)
         {
             _context.MoviesFromFakeDb.Remove(movie);
             await SaveChangesAsync(_context);

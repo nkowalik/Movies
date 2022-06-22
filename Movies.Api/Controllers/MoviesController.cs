@@ -67,12 +67,14 @@ namespace Movies.Api.Controllers
             {
                 case "omdb":
                     var movieOmDb = await _omDbMoviesRepository.GetMovieByTitleAsync(title);
-                    if (movieOmDb == null) return NotFound();
-                    return Ok(_mapper.Map<OmDbMovieDto>(movieOmDb));
+                    return movieOmDb == null
+                        ? NotFound()
+                        : Ok(_mapper.Map<OmDbMovieDto>(movieOmDb));
                 case "fakedb":
-                    var movieFakeDb = await _fakeDbMoviesRepository.GetMovieByTitleAsync(title);
-                    if (movieFakeDb == null) return NotFound();
-                    return Ok(_mapper.Map<FakeDbMovieDto>(movieFakeDb));
+                    var movieFakeDb = await _fakeDbMoviesRepository.GetMovieByTitleAsync(title);                    
+                    return movieFakeDb == null 
+                        ? NotFound() 
+                        : Ok(_mapper.Map<FakeDbMovieDto>(movieFakeDb));
                 default:
                     throw new ArgumentOutOfRangeException(nameof(source),
                            $"Invalid source {source}. Supported sources: OmDb, FakeDb.");
@@ -93,17 +95,17 @@ namespace Movies.Api.Controllers
             {
                 case "omdb":
                     var moviesOmDb = await _omDbMoviesRepository.GetMovieByIdAsync(id);
-                    if (moviesOmDb == null) return NotFound();
-                    await _omDbMoviesRepository.DeleteMovie(moviesOmDb);
-                    break;
+                    if (moviesOmDb == null) break;
+                    await _omDbMoviesRepository.DeleteMovieAsync(moviesOmDb);
+                    return NoContent();
                 case "fakedb":
                     var moviesFakeDb = await _fakeDbMoviesRepository.GetMovieByIdAsync(id);
-                    if (moviesFakeDb == null) return NotFound();
-                    await _fakeDbMoviesRepository.DeleteMovie(moviesFakeDb);
-                    break;
+                    if (moviesFakeDb == null) break;
+                    await _fakeDbMoviesRepository.DeleteMovieAsync(moviesFakeDb);
+                    return NoContent();
             }
 
-            return NoContent();
+            return NotFound();
         }
     }
 }
