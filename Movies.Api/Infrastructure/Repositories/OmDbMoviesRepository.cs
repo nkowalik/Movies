@@ -29,8 +29,8 @@ namespace Movies.Api.Infrastructure.Repositories
 
         public async Task<OmDbMovieEntity?> GetMovieByTitleAsync(string title)
         {
-            var movies = await _collector.FetchMovieDataFromOmDbAsync(title);
-            return _mapper.Map<OmDbMovieEntity>(movies);
+            var movie = await _collector.FetchMovieDataFromOmDbAsync(title);
+            return _mapper.Map<OmDbMovieEntity>(movie);
         }
 
         public async Task<OmDbMovieEntity?> GetMovieByIdAsync(int id)
