@@ -38,7 +38,7 @@ namespace Movies.Api.Infrastructure.Repositories
         public async Task<IEnumerable<OmDbMovieEntity>> GetMoviesAsync()
         {
             MovieContextSeeder.SeedOmDb(_context);
-            return _context.MoviesFromOmDb;
+            return await _context.MoviesFromOmDb.ToListAsync();
         }
 
         public async Task<OmDbMovieEntity?> GetMovieByTitleAsync(string title)

@@ -67,14 +67,14 @@ namespace Movies.Api.Controllers
             {
                 case "omdb":
                     var movieOmDb = await _omDbMoviesRepository.GetMovieByTitleAsync(title);
-                    return movieOmDb == null
-                        ? NotFound()
-                        : Ok(_mapper.Map<OmDbMovieDto>(movieOmDb));
+                    return IsValidateResponse(movieOmDb)
+                        ? Ok(_mapper.Map<OmDbMovieDto>(movieOmDb))
+                        : NotFound();
                 case "fakedb":
                     var movieFakeDb = await _fakeDbMoviesRepository.GetMovieByTitleAsync(title);                    
-                    return movieFakeDb == null 
-                        ? NotFound() 
-                        : Ok(_mapper.Map<FakeDbMovieDto>(movieFakeDb));
+                    return IsValidateResponse(movieFakeDb) 
+                        ? Ok(_mapper.Map<FakeDbMovieDto>(movieFakeDb))
+                        : NotFound();
                 default:
                     throw new ArgumentOutOfRangeException(nameof(source),
                            $"Invalid source {source}. Supported sources: OmDb, FakeDb.");
@@ -106,6 +106,43 @@ namespace Movies.Api.Controllers
             }
 
             return NotFound();
+        }
+
+        private static bool IsValidateResponse(OmDbMovieEntity? movie)
+        {
+            if (movie == null)
+            {
+                return false;
+            }
+
+            if (movie.Title is null || movie.Year is null || movie.Genre is null 
+                || movie.Director is null || movie.Plot is null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool IsValidateResponse(FakeDbMovieEntity? movie)
+        {
+            if (movie?.Search == null)
+            {
+                return false;
+            }
+
+            IEnumerable<FakeDbMovieDetailsEntity> movieDetailsCollection = movie.Search;
+
+            foreach(var movieDetails in movieDetailsCollection)
+            {
+                if (movieDetails.Title is null || movieDetails.Year is null 
+                    || movieDetails.Poster is null)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
